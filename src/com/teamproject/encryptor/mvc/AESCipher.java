@@ -11,16 +11,40 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.SecureRandom;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import javax.crypto.spec.PBEKeySpec;
+
+import javax.crypto.IllegalBlockSizeException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.InvalidAlgorithmParameterException;
+import java.util.Base64;
+
 abstract class SymmetricCipher {
 	public PBEKeySpec keySpec;
 	public IvParameterSpec iv;
 	public Cipher cipher;
 	
-	public SymmetricCipher(String key) {
+	public SymmetricCipher(String password) {
 		SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
-        PBEKeySpec spec = new PBEKeySpec(pwd.toCharArray(), salt, 65536, 256); // AES-256
+        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256); // AES-256
         SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         byte[] key = f.generateSecret(spec).getEncoded();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
@@ -39,8 +63,8 @@ abstract class SymmetricCipher {
 
 
 public class AESCipher extends SymmetricCipher {
-	public AESCipher(String key) {
-		super(key);
+	public AESCipher(String password) {
+		super(password);
 	}
 
 	public String encrypt(String text) {
