@@ -19,10 +19,10 @@ public class EncryptorController {
 	  
 	  String originalInputText = request.getParameter("inputText1");
 	  // TODO add input for key
-    String key = request.getParameter("keyInput");
+      String key = request.getParameter("keyInput1");
 
-
-	  Cipher cipher = new Cipher(originalInputText, key);
+	  AESCipher cipher = new AESCipher(originalInputText, key);
+	  
 	  String encryptedText = cipher.encrypt();
 	  
 	  model.addAttribute("text1", originalInputText);
@@ -42,10 +42,10 @@ public class EncryptorController {
 	  
 	  String originalInputText = request.getParameter("inputText2");
 	  // TODO add input for key
-    String key = request.getParameter("keyInput");
+      String key = request.getParameter("keyInput2");
 
-
-	  Cipher cipher = new Cipher(originalInputText, key);
+	  AESCipher cipher = new AESCipher(originalInputText, key);
+	  
 	  String decryptedText = cipher.decrypt();
 	  
 	  model.addAttribute("text1", originalInputText);

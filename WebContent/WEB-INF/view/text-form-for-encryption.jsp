@@ -14,6 +14,9 @@
 		<input type="text" name = "inputText1"
 			placeholder="Write your text"/>
 		
+		<input type="text" name = "keyInput1"
+			placeholder="Write your key"/>
+		
     	<input type = "submit" />
          
     </form>

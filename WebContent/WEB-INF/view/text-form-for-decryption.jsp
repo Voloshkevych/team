@@ -13,6 +13,9 @@
 	
 		<input type="text" name = "inputText2"
 			placeholder="Write your text"/>
+			
+		<input type="text" name = "keyInput2"
+			placeholder="Write your key"/>
 		
     	<input type = "submit" />
          
