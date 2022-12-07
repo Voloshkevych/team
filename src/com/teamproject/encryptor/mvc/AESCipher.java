@@ -47,41 +47,41 @@ abstract class SymmetricCipher {
 
 
 public class AESCipher extends SymmetricCipher {
+	byte[] _inputBytes;
+	byte[] _outputBytes;
+
 	public AESCipher(String password) {
 		super(password);
 	}
 
 	public String encrypt(String text) {
 		byte[] inputBytes = text.getBytes();
-		int size = inputBytes.length;
-		byte[] result = new byte[size];
+		byte[] outputBytes;
 		
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
-			byte[] outputBytes = cipher.doFinal(inputBytes);
-			result = Arrays.copyOf(outputBytes, size);
+			outputBytes = cipher.doFinal(inputBytes);
 			
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidKeySpecException | InvalidAlgorithmParameterException e) {
 			e.printStackTrace();
 		}
 		
-		return Base64.getEncoder().encodeToString(result);
+		_inputBytes = inputBytes;
+		_outputBytes = outputBytes;
+		return Base64.getEncoder().encodeToString(outputBytes);
 	}
 	
 	public String decrypt(String text) {
-		byte[] inputBytes = Base64.getDecoder().decode(text);
-		int size = inputBytes.length;
-		byte[] result = new byte[size];
+		_inputBytes = Base64.getDecoder().decode(text);
 		
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, keySpec, iv);
-			byte[] outputBytes = cipher.doFinal(inputBytes);
-			result = Arrays.copyOf(outputBytes, size);
+			_outputBytes = cipher.doFinal(_inputBytes);
 			
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidKeySpecException | InvalidAlgorithmParameterException e) {
 			e.printStackTrace();
 		}
 		
-		return new String(result, StandardCharsets.UTF_8);
+		return new String(_outputBytes, StandardCharsets.UTF_8);
 	}
 }
