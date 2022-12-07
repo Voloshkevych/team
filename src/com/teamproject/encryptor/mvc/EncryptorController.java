@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class EncryptorController {
+  AESCipher cipher;
   
   @RequestMapping("/text-for-encryption")
   public String textForEncryption() {
@@ -21,9 +22,11 @@ public class EncryptorController {
 	  // TODO add input for key
       String key = request.getParameter("keyInput1");
 
-	  AESCipher cipher = new AESCipher(originalInputText, key);
+    if (cipher == null) {
+      cipher = new AESCipher(key);
+    }
 	  
-	  String encryptedText = cipher.encrypt();
+	  String encryptedText = cipher.encrypt(originalInputText);
 	  
 	  model.addAttribute("text1", originalInputText);
 	  
@@ -44,9 +47,11 @@ public class EncryptorController {
 	  // TODO add input for key
       String key = request.getParameter("keyInput2");
 
-	  AESCipher cipher = new AESCipher(originalInputText, key);
+    if (cipher == null) {
+      AESCipher cipher = new AESCipher(key);
+    }
 	  
-	  String decryptedText = cipher.decrypt();
+	  String decryptedText = cipher.decrypt(originalInputText);
 	  
 	  model.addAttribute("text1", originalInputText);
 	  

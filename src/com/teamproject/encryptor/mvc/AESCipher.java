@@ -12,51 +12,65 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 abstract class SymmetricCipher {
-	public String text;
-	public SecretKeySpec key;
+	public PBEKeySpec keySpec;
+	public IvParameterSpec iv;
+	public Cipher cipher;
 	
-	public SymmetricCipher(String text, String key) {
-		this.text = text;
-		this.key = new SecretKeySpec(key.getBytes(), "AES");
+	public SymmetricCipher(String key) {
+		SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        PBEKeySpec spec = new PBEKeySpec(pwd.toCharArray(), salt, 65536, 256); // AES-256
+        SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] key = f.generateSecret(spec).getEncoded();
+        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+        byte[] ivBytes = new byte[16];
+        random.nextBytes(ivBytes);
+        IvParameterSpec iv = new IvParameterSpec(ivBytes);
+		
+		this.iv = iv;
+		this.keySpec = keySpec;
+		this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 	}
 	
-	public abstract String encrypt();
-	public abstract String decrypt();
+	public abstract String encrypt(String text);
+	public abstract String decrypt(String text);
 }
 
 
 public class AESCipher extends SymmetricCipher {
-	public AESCipher(String text, String key) {
-		super(text, key);
+	public AESCipher(String key) {
+		super(key);
 	}
 
-	public String encrypt() {
-		return encryptOrDecrypt(Cipher.ENCRYPT_MODE);
-	}
-	
-	public String decrypt() {
-		return encryptOrDecrypt(Cipher.DECRYPT_MODE);
-	}
-	
-	protected String encryptOrDecrypt(int mode) {
-		
+	public String encrypt(String text) {
 		byte[] inputBytes = text.getBytes();
-		
 		int size = inputBytes.length;
-		
 		byte[] result = new byte[size];
 		
 		try {
-			Cipher cipher = Cipher.getInstance("AES");
-			
-			cipher.init(mode, key);
-			
-			
+			cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
 			byte[] outputBytes = cipher.doFinal(inputBytes);
-			
 			result = Arrays.copyOf(outputBytes, size);
 			
-		} catch (IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidKeySpecException | InvalidAlgorithmParameterException e) {
+			e.printStackTrace();
+		}
+		
+		return Base64.getEncoder().encodeToString(result);
+	}
+	
+	public String decrypt(String text) {
+		byte[] inputBytes = Base64.getDecoder().decode(text);
+		int size = inputBytes.length;
+		byte[] result = new byte[size];
+		
+		try {
+			cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
+			byte[] outputBytes = cipher.doFinal(inputBytes);
+			result = Arrays.copyOf(outputBytes, size);
+			
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidKeySpecException | InvalidAlgorithmParameterException e) {
 			e.printStackTrace();
 		}
 		
