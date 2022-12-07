@@ -23,23 +23,6 @@ abstract class SymmetricCipher {
   public IvParameterSpec iv;
   public Cipher cipher;
   
-  public SymmetricCipher(String password) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException {
-    SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256); // AES-256
-        SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] key = f.generateSecret(spec).getEncoded();
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        byte[] ivBytes = new byte[16];
-        random.nextBytes(ivBytes);
-        IvParameterSpec iv = new IvParameterSpec(ivBytes);
-    
-    this.iv = iv;
-    this.keySpec = keySpec;
-    this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-  }
-  
   public abstract String encrypt(String text);
   public abstract String decrypt(String text);
 }
@@ -50,7 +33,19 @@ public class AESCipher extends SymmetricCipher {
   byte[] _outputBytes;
 
   public AESCipher(String password) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException {
-    super(password);
+    byte[] salt = new byte[16];
+    random.nextBytes(salt);
+    PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256); // AES-256
+    SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+    byte[] key = f.generateSecret(spec).getEncoded();
+    SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+    byte[] ivBytes = new byte[16];
+    random.nextBytes(ivBytes);
+    IvParameterSpec iv = new IvParameterSpec(ivBytes);
+
+    this.iv = iv;
+    this.keySpec = keySpec;
+    this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
   }
 
   public String encrypt(String text) {
