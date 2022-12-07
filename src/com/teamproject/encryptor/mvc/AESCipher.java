@@ -20,7 +20,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.Base64;
 
 abstract class SymmetricCipher {
-	public PBEKeySpec keySpec;
+	public SecretKeySpec keySpec;
 	public IvParameterSpec iv;
 	public Cipher cipher;
 	
