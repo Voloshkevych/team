@@ -18,10 +18,12 @@ public class EncryptorController {
   public String processEncryptionForm(HttpServletRequest request, Model model) {
 	  
 	  String originalInputText = request.getParameter("inputText1");
-	  
-	  
-	  //TODO this variable is for your modified text
-	  String encryptedText = originalInputText.toUpperCase();
+	  // TODO add input for key
+    String key = request.getParameter("keyInput");
+
+
+	  Cipher cipher = new Cipher(originalInputText, key);
+	  String encryptedText = cipher.encrypt();
 	  
 	  model.addAttribute("text1", originalInputText);
 	  
@@ -39,14 +41,16 @@ public class EncryptorController {
   public String processDecryptionForm(HttpServletRequest request, Model model) {
 	  
 	  String originalInputText = request.getParameter("inputText2");
-	  
-	  
-	  //TODO this variable is for your modified text
-	  String encryptedText = originalInputText.toLowerCase();
+	  // TODO add input for key
+    String key = request.getParameter("keyInput");
+
+
+	  Cipher cipher = new Cipher(originalInputText, key);
+	  String decryptedText = cipher.decrypt();
 	  
 	  model.addAttribute("text1", originalInputText);
 	  
-	  model.addAttribute("text2", encryptedText);
+	  model.addAttribute("text2", decryptedText);
 	  
 	  return "confirmation";
   }
