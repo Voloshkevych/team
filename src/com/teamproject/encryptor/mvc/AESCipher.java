@@ -90,7 +90,7 @@ public class AESCipher extends SymmetricCipher {
 		byte[] result = new byte[size];
 		
 		try {
-			cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
+			cipher.init(Cipher.DECRYPT_MODE, keySpec, iv);
 			byte[] outputBytes = cipher.doFinal(inputBytes);
 			result = Arrays.copyOf(outputBytes, size);
 			
